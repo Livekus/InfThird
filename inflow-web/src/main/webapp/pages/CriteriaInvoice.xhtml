@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sdd="http://java.sun.com/jsf/composite/sdd" 
+                template="/layout.xhtml">
+    <!-- ###################################################################### -->
+    <!-- ## Header -->
+    <ui:define name="header">
+        <title>Tax invoice</title>
+    </ui:define>
+
+    <!-- ###################################################################### -->
+    <!-- ## Center Layout -->
+    <ui:define name="content">
+        <p:panel id="panel1">
+            <p:outputLabel value="ชื่อลูกกค้า:"/>
+            <p:inputText 
+                id="name"
+                value="#{invoiceBean.customerName}"
+                >
+            </p:inputText>
+            <p:outputLabel style="padding-left: 15px;" value="วันที่:"/>
+            <p:calendar 
+                id="orderDate"
+                size="10"
+                value="#{invoiceBean.orderDate}">
+            </p:calendar>
+            <p:selectManyCheckbox id="grid" value="#{invoiceBean.selectedMovies}" >  
+                <f:selectItems value="#{invoiceBean.movies}"/>  
+            </p:selectManyCheckbox>
+            <p:commandButton 
+                value="ค้นหารายการ" 
+                actionListener="#{invoiceBean.searchCustomerOrder}"
+                process="@this,name,orderDate,grid"
+                update="@this,:formc:panel2,grid"/>
+        </p:panel>
+        <p:panel id="panel2">
+            <p:dataTable 
+                id="cusOrder" 
+                var="order" 
+                value="#{invoiceBean.customerFormList}"
+                emptyMessage="ไม่มีรายการ"
+                paginator="true"
+                rows="5"
+                paginatorTemplate="{RowsPerPageDropdown} 
+                {FirstPageLink} 
+                {PreviousPageLink} 
+                {PageLinks} 
+                {CurrentPageReport} 
+                {NextPageLink} 
+                {LastPageLink}"
+                rowsPerPageTemplate="5,10,15 ,20, 25,30">
+
+                <f:facet name="header">  
+                    รายชื่อลูกค้า
+                </f:facet>
+
+                <p:column headerText="ชื่อลูกค้า">  
+                    #{order.baseCustomer.name}  
+                </p:column>  
+
+                <p:column headerText="วันที่สั่งสินค้า" >  
+                    #{order.soSalesOrder.orderDate} 
+                </p:column>  
+
+                <p:column headerText="Order number">  
+                    #{order.soSalesOrder.orderNumber} 
+                </p:column>  
+
+                <p:column headerText="ที่อยู่ 1">  
+                    #{order.baseCustomer.address1} 
+                </p:column> 
+
+                <p:column headerText="ที่อยู่ 2">  
+                    #{order.baseCustomer.address2} 
+                </p:column>
+
+                <p:column headerText="รายละเอียด">  
+                    #{order.soSalesOrder.orderRemarks} 
+                </p:column>
+
+                <p:column headerText="พิมพ์"> 
+                    <p:commandButton
+                        icon="ui-icon-document"
+                        actionListener="#{invoiceBean.manipolateData}"
+                        ajax="false"
+                        onclick="this.form.target='_blank'"
+                        > 
+                        <f:attribute name="customerSelected" value="#{order}" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>  
+        </p:panel>
+    </ui:define>
+
+</ui:composition>
